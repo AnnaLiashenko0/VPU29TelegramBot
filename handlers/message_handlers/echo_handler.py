@@ -7,7 +7,7 @@ from handlers.base_handler import BaseHandler
 class EchoHandler(BaseHandler):
     @classmethod
     def register(cls, app):
-        app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, cls.callback))
+        app.add_handler(MessageHandler(filters.Regex(r'echo\s+(.*)$'),filters.TEXT & ~filters.COMMAND, cls.callback))
 
     @staticmethod
     async def callback(update: Update, context: ContextTypes.DEFAULT_TYPE):

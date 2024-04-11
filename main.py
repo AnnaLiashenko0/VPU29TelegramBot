@@ -19,5 +19,3 @@ if __name__ == '__main__':
             obj.register(app)
 
     app.run_polling()
-
-#
