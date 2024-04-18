@@ -67,7 +67,7 @@ class FirstConversationHandler(BaseHandler):
 
     @staticmethod
     async def age(update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Parses the CallbackQuery and updates the message text."""
+
         query = update.callback_query
 
 
@@ -80,3 +80,4 @@ class FirstConversationHandler(BaseHandler):
         await query.edit_message_text(text=f"You are {context.user_data['gender']} gender. Your age is {context.user_data['age']} years old.")
 
         return ConversationHandler.END
+
