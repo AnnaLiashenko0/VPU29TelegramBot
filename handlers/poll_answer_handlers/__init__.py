@@ -1,0 +1,1 @@
+from .favorite_subject_handler import FavoriteSubjectHandler
