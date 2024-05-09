@@ -7,8 +7,7 @@ from handlers.base_handler import BaseHandler
 class GoodbyeHandler(BaseHandler):
     @classmethod
     def register(cls, app):
-        goodbye_handler = CommandHandler('goodbye', cls.callback)
-        app.add_handler(goodbye_handler)
+        app.add_handler(CommandHandler('goodbye', cls.callback))
 
     @staticmethod
     async def callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -17,4 +16,4 @@ class GoodbyeHandler(BaseHandler):
             await update.message.reply_text(f'Bye {update.effective_user.first_name}!')
 
         else:
-            await update.message.reply_text(f'Bye {update.effective_user.first_name} {update.effective_user.last_name}!')
+            await update.message.reply_text(f'Bye {update.effective_user.first_name} {last_name}!')

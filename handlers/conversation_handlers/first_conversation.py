@@ -1,10 +1,10 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ConversationHandler, CommandHandler, ContextTypes, MessageHandler, filters, \
     CallbackQueryHandler
 
 from handlers.base_handler import BaseHandler
 
-GENDER, PHOTO, AGE = range(3)
+GENDER, PHOTO, AGE, BUTTON = range(4)
 
 
 class FirstConversationHandler(BaseHandler):
@@ -15,7 +15,7 @@ class FirstConversationHandler(BaseHandler):
             states={
                 GENDER: [MessageHandler(filters.Regex('^(Boy|Girl)$'), cls.gender)],
                 PHOTO: [MessageHandler(filters.PHOTO, cls.photo)],
-                AGE: [CallbackQueryHandler(cls.age)],
+                AGE: [CallbackQueryHandler(cls.age)]
             },
             fallbacks=[CommandHandler('exit', cls.exit)]
         )
@@ -24,23 +24,25 @@ class FirstConversationHandler(BaseHandler):
 
     @staticmethod
     async def begin(update: Update, context: ContextTypes.DEFAULT_TYPE):
-        await update.message.reply_text(f'Hello {update.effective_user.first_name}! Are you a Boy or a Girl?')
+        keyboard = [
+            [KeyboardButton('Boy'), KeyboardButton('Girl')],
+        ]
+        reply_text = ReplyKeyboardMarkup(keyboard)
+        await update.message.reply_text(f'Hello {update.effective_user.first_name}! Are you a Boy or a Girl?', reply_markup=reply_text)
 
         return GENDER
 
     @staticmethod
     async def exit(update: Update, context: ContextTypes.DEFAULT_TYPE):
-        await update.message.reply_text(f'Лівнув, БОТ!')
+        await update.message.reply_text(f'Exit from conversation')
 
         return ConversationHandler.END
 
-
     @staticmethod
     async def gender(update: Update, context: ContextTypes.DEFAULT_TYPE):
-        await update.message.reply_text(f'You very BAD {update.message.text}. Share your hot photo!')
-
         gender = update.message.text
         context.user_data['gender'] = gender
+        await update.message.reply_text(f'You are a {gender}. Share your photo, please!', reply_markup=ReplyKeyboardRemove())
 
         return PHOTO
 
@@ -66,17 +68,14 @@ class FirstConversationHandler(BaseHandler):
 
 
     @staticmethod
-    async def age(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    async def age(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Parses the CallbackQuery and updates the message text."""
         query = update.callback_query
-
-
         await query.answer()
 
         age = query.data
-
         context.user_data['age'] = age
 
-        await query.edit_message_text(text=f"You are {context.user_data['gender']} gender. Your age is {context.user_data['age']} years old.")
+        await query.edit_message_text(text=f"You are {context.user_data['gender']}. Your age is {context.user_data['age']} years old.")
 
-        return ConversationHandler.END
+        return AGE
